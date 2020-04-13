@@ -15,17 +15,7 @@ export var grid_y_space = 100
 var cards = []
 
 func _ready():
-	if (grid_x_size * grid_y_size) % 2 != 0:
-		print("Grid size isn't even", (grid_x_size * grid_y_size))
-		get_tree().quit()
-
-	var random_numbers = _get_shuffled_array()
-
-	print("Random numbers", random_numbers)
-
-	cards = _create_cards(random_numbers)
-	for card in cards:
-		add_child(card)
+	globals.state = globals.GameStates.INIT
 
 func _create_cards(numbers):
 	var new_cards = []
@@ -41,9 +31,9 @@ func _create_cards(numbers):
 func _get_shuffled_array():
 	var numbers = []
 	var middle = (grid_x_size * grid_y_size) / 2
-	for i in range(middle):
+	for i in range(1, middle+1):
 		numbers.push_back(i)
-	for i in range(middle):
+	for i in range(1, middle+1):
 		numbers.push_back(i)
 	randomize()
 	numbers.shuffle()
@@ -51,59 +41,81 @@ func _get_shuffled_array():
 
 func _process(_delta: float):
 	match globals.state:
+		globals.GameStates.INIT:
+			if (grid_x_size * grid_y_size) % 2 != 0:
+				print("Grid size isn't even", (grid_x_size * grid_y_size))
+				get_tree().quit()
+
+			var random_numbers = _get_shuffled_array()
+
+			print("Random numbers", random_numbers)
+
+			cards = _create_cards(random_numbers)
+			for card in cards:
+				add_child(card)
+
+			globals.state = globals.GameStates.SELECTING_CARDS
+
 		globals.GameStates.CLEANUP:
 			_cleanup()
-			_count_found_cards()
+
+			if _is_all_cards_found():
+				globals.state = globals.GameStates.END_GAME
+			else:
+				globals.state = globals.GameStates.SELECTING_CARDS
+
 		globals.GameStates.SELECTING_CARDS:
-			_count_face_cards()
+			if _is_two_cards_selected():
+				globals.state = globals.GameStates.CARDS_SELECTED
+
 		globals.GameStates.CARDS_SELECTED:
-			_check_cards()
+			if _check_selected_cards_are_equal():
+				right_choice.play()
+				globals.should_mark_cards_found()
+				globals.state = globals.GameStates.CLEANUP
+			else:
+				result_timer.start()
+				globals.state = globals.GameStates.SHOWING_RESULT
+
 		globals.GameStates.SHOWING_RESULT:
 			pass
 		globals.GameStates.END_GAME:
 			_reload_scene()
 
-func _count_face_cards():
+func _is_two_cards_selected():
 	var count = 0
 	for card in cards:
 		if card.state == card.CardState.FACE_UP:
 			count = count + 1
 
-	if (count == 0 or count == 1):
-		globals.state = globals.GameStates.SELECTING_CARDS
-	if (count == 2):
-		globals.state = globals.GameStates.CARDS_SELECTED
+	return count >= 2
 
-func _count_found_cards():
+func _is_all_cards_found():
 	var count = 0
 	for card in cards:
 		if card.state == card.CardState.FOUND:
 			count = count + 1
 
 	if count >= (grid_x_size * grid_y_size):
-		globals.state = globals.GameStates.END_GAME
+		return true
 	else:
-		globals.state = globals.GameStates.SELECTING_CARDS
+		return false
 
-func _check_cards():
+func _check_selected_cards_are_equal():
 	var card1 = globals.selected_cards[0]
 	var card2 = globals.selected_cards[1]
 
-	if (card1.card_number == card2.card_number):
-		right_choice.play()
-		card1.should_mark_found()
-		card2.should_mark_found()
-		globals.state = globals.GameStates.CLEANUP
-	else:
-		result_timer.start()
-		globals.state = globals.GameStates.SHOWING_RESULT
+	return card1.card_number == card2.card_number
 
 func _cleanup():
 	globals.clean_selected_cards()
 
-func _reload_scene():
+func _reset():
 	_cleanup()
-	globals.state = globals.GameStates.SELECTING_CARDS
+	cards.clear()
+
+func _reload_scene():
+	_reset()
 	get_tree().reload_current_scene()
 
 func _input(_event: InputEvent) -> void:
@@ -118,7 +130,7 @@ func _on_showing_result_ended():
 	var card1 = globals.selected_cards[0]
 	var card2 = globals.selected_cards[1]
 
-	print("Cards selected %s and %s" % [card1.card_number, card2.card_number])
+	print("Cards selected not match %s and %s" % [card1.card_number, card2.card_number])
 
 	if (card1.card_number != card2.card_number):
 		card1.should_mark_face_down()

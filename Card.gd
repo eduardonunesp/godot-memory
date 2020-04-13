@@ -19,9 +19,11 @@ export (CardState) var state = CardState.FACE_DOWN
 var card_number = 0
 
 func should_mark_found():
+	print("Card %s found" % card_number)
 	state = CardState.FOUND
 
 func should_mark_face_down():
+	print("Card %s is face down" % card_number)
 	state = CardState.FACE_DOWN
 
 func _process(_delta: float):

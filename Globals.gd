@@ -1,6 +1,7 @@
 extends Node
 
 enum GameStates {
+	INIT,
 	CLEANUP,
 	SELECTING_CARDS,
 	CARDS_SELECTED,
@@ -14,6 +15,14 @@ var selected_cards = []
 
 func clean_selected_cards():
 	selected_cards.clear()
+
+func should_mark_cards_face_down():
+	for card in selected_cards:
+		card.should_mark_face_down()
+
+func should_mark_cards_found():
+	for card in selected_cards:
+		card.should_mark_found()
 
 func _set_state(new_state):
 	if new_state != state:
