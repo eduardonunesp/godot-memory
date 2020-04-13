@@ -6,8 +6,7 @@
 
 [node name="World" type="Node"]
 script = ExtResource( 2 )
-grid_x_size = 2
-grid_y_size = 2
+grid_y_size = 4
 
 [node name="StartPosition" type="Position2D" parent="."]
 position = Vector2( 92.22, 77.7639 )
