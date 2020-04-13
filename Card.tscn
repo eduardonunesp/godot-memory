@@ -19,9 +19,17 @@ texture = ExtResource( 1 )
 scale = Vector2( 0.2, 0.2 )
 texture = ExtResource( 3 )
 
-[node name="MouseDetector" type="CollisionShape2D" parent="."]
-scale = Vector2( 0.2, 0.2 )
-shape = SubResource( 1 )
+[node name="Number" type="Label" parent="."]
+margin_left = -20.3602
+margin_top = -20.6359
+margin_right = 19.6398
+margin_bottom = -6.63591
+rect_scale = Vector2( 1.00615, 3.05496 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+align = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Label" type="Label" parent="."]
 visible = false
@@ -33,4 +41,9 @@ align = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="MouseDetector" type="CollisionShape2D" parent="."]
+visible = false
+scale = Vector2( 0.2, 0.2 )
+shape = SubResource( 1 )
 [connection signal="input_event" from="." to="." method="_on_card_clicked"]
