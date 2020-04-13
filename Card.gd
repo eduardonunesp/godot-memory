@@ -1,6 +1,8 @@
 extends Area2D
 class_name Card
 
+onready var globals = get_node("/root/Globals")
+
 onready var label = get_node("Label")
 onready var number = get_node("Number")
 onready var face_up = get_node("FaceUp")
@@ -35,8 +37,9 @@ func _on_face_up():
 	label.text = "FACE UP"
 
 func _on_card_clicked(viewport: Node, event: InputEvent, shape_idx: int):
+	if globals.state == globals.GameStates.SECOND_CARD_SELECTED:
+		return
+
 	if (event is InputEventMouseButton && event.pressed):
 		if state == CardState.FACE_DOWN:
 			state = CardState.FACE_UP
-		else:
-			state = CardState.FACE_DOWN

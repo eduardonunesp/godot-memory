@@ -1,5 +1,6 @@
 extends Node
 
+onready var globals = get_node("/root/Globals")
 onready var card = preload("res://Card.tscn")
 onready var start_position = get_node("StartPosition")
 
@@ -8,11 +9,12 @@ export var grid_y_size = 5
 export var grid_x_space = 100
 export var grid_y_space = 100
 
+
 var cards = []
 
 func _ready():
 	var random_numbers = _get_random_numbers()
-	var cards = _create_cards(random_numbers)
+	cards = _create_cards(random_numbers)
 	for card in cards:
 		add_child(card)
 
@@ -34,6 +36,30 @@ func _get_random_numbers():
 	randomize()
 	numbers.shuffle()
 	return numbers
+
+func _count_face_up_cards():
+	var count = 0
+	for card in cards:
+		if card.state == card.CardState.FACE_UP:
+			count = count + 1
+	return count
+
+func _process(delta: float):
+	if (_count_face_up_cards() == 0):
+		globals.state = globals.GameStates.NO_CARD_SELETED
+	if (_count_face_up_cards() == 1):
+		globals.state = globals.GameStates.FIRST_CARD_SELECTED
+	if (_count_face_up_cards() == 2):
+		globals.state = globals.GameStates.SECOND_CARD_SELECTED
+
+	match globals.state:
+		globals.GameStates.NO_CARD_SELETED:
+			pass
+		globals.GameStates.FIRST_CARD_SELECTED:
+			pass
+		globals.GameStates.SECOND_CARD_SELECTED:
+			pass
+
 
 func _input(event: InputEvent) -> void:
 	if Input.is_action_pressed('ui_cancel'):

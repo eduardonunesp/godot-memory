@@ -24,6 +24,10 @@ config/name="Memory"
 run/main_scene="res://World.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Globals="*res://Globals.tscn"
+
 [rendering]
 
 quality/driver/driver_name="GLES2"
