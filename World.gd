@@ -1,11 +1,10 @@
 extends Node
 
-onready var globals = get_node("/root/Globals")
 onready var card = preload("res://Card.tscn")
-onready var start_position = get_node("StartPosition")
-onready var result_timer = get_node("ResultTimer")
-onready var wrong_choice = get_node("WrongChoice")
-onready var right_choice = get_node("RightChoice")
+onready var start_position = $StartPosition
+onready var result_timer = $ResultTimer
+onready var wrong_choice = $WrongChoice
+onready var right_choice = $RightChoice
 
 export var grid_x_size = 3
 export var grid_y_size = 6
@@ -16,39 +15,39 @@ var cards = []
 
 
 func _ready():
-	globals.state = globals.GameStates.INIT
+	Globals.state = Globals.GameStates.INIT
 
 func _process(_delta: float):
-	match globals.state:
-		globals.GameStates.INIT:
+	match Globals.state:
+		Globals.GameStates.INIT:
 			_init_game()
 
-			globals.state = globals.GameStates.SELECTING_CARDS
+			Globals.state = Globals.GameStates.SELECTING_CARDS
 
-		globals.GameStates.CLEANUP:
+		Globals.GameStates.CLEANUP:
 			_cleanup()
 
 			if _is_all_cards_found():
-				globals.state = globals.GameStates.END_GAME
+				Globals.state = Globals.GameStates.END_GAME
 			else:
-				globals.state = globals.GameStates.SELECTING_CARDS
+				Globals.state = Globals.GameStates.SELECTING_CARDS
 
-		globals.GameStates.SELECTING_CARDS:
+		Globals.GameStates.SELECTING_CARDS:
 			if _is_two_cards_selected():
-				globals.state = globals.GameStates.CARDS_SELECTED
+				Globals.state = Globals.GameStates.CARDS_SELECTED
 
-		globals.GameStates.CARDS_SELECTED:
+		Globals.GameStates.CARDS_SELECTED:
 			if _check_selected_cards_are_equal():
 				right_choice.play()
-				globals.should_mark_cards_found()
-				globals.state = globals.GameStates.CLEANUP
+				Globals.should_mark_cards_found()
+				Globals.state = Globals.GameStates.CLEANUP
 			else:
 				result_timer.start()
-				globals.state = globals.GameStates.SHOWING_RESULT
+				Globals.state = Globals.GameStates.NO_OP
 
-		globals.GameStates.SHOWING_RESULT:
+		Globals.GameStates.NO_OP:
 			pass
-		globals.GameStates.END_GAME:
+		Globals.GameStates.END_GAME:
 			_reload_scene()
 
 
@@ -118,14 +117,14 @@ func _is_all_cards_found():
 
 
 func _check_selected_cards_are_equal():
-	var card1 = globals.selected_cards[0]
-	var card2 = globals.selected_cards[1]
+	var card1 = Globals.selected_cards[0]
+	var card2 = Globals.selected_cards[1]
 
 	return card1.card_number == card2.card_number
 
 
 func _cleanup():
-	globals.clean_selected_cards()
+	Globals.clean_selected_cards()
 
 
 func _reset():
@@ -149,8 +148,8 @@ func _notification(what: int) -> void:
 
 
 func _on_showing_result_ended():
-	var card1 = globals.selected_cards[0]
-	var card2 = globals.selected_cards[1]
+	var card1 = Globals.selected_cards[0]
+	var card2 = Globals.selected_cards[1]
 
 	print("Cards selected not match %s and %s" % [card1.card_number, card2.card_number])
 
@@ -159,4 +158,4 @@ func _on_showing_result_ended():
 		card2.should_mark_face_down()
 		wrong_choice.play()
 
-	globals.state = globals.GameStates.CLEANUP
+	Globals.state = Globals.GameStates.CLEANUP
