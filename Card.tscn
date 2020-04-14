@@ -46,4 +46,5 @@ __meta__ = {
 visible = false
 scale = Vector2( 0.2, 0.2 )
 shape = SubResource( 1 )
+[connection signal="face_changed" from="." to="." method="_on_Card_face_changed"]
 [connection signal="input_event" from="." to="." method="_on_card_clicked"]
