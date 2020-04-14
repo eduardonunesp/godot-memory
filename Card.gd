@@ -54,4 +54,4 @@ func _on_card_clicked(_viewport: Node, event: InputEvent, _shape_idx: int):
 			state = CardState.FACE_UP
 			emit_signal("face_changed", state)
 			Globals.selected_cards.push_back(self)
-			print(self.card_number)
+			print("Selected card %s" % self.card_number)

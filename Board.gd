@@ -1,4 +1,4 @@
-extends Node
+extends Node2D
 
 onready var card = preload("res://Card.tscn")
 onready var start_position = $StartPosition
